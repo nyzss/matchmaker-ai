@@ -1,0 +1,21 @@
+{
+    "name": "@repo/database",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@neondatabase/serverless": "^0.10.4",
+        "dotenv": "^16.4.7",
+        "drizzle-orm": "^0.39.3"
+    },
+    "devDependencies": {
+        "drizzle-kit": "^0.30.4",
+        "tsx": "^4.19.3"
+    }
+}
