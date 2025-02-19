@@ -1,0 +1,20 @@
+{
+    "name": "auth",
+    "version": "0.0.0",
+    "private": true,
+    "exports": {
+        ".": "./src/main.ts"
+    },
+    "scripts": {
+        "generate": "npx @better-auth/cli generate",
+        "migrate": "npx @better-auth/cli migrate"
+    },
+    "dependencies": {
+        "@repo/database": "workspace:*",
+        "better-auth": "^1.1.18",
+        "dotenv": "^16.4.7"
+    },
+    "devDependencies": {
+        "@repo/typescript-config": "workspace:*"
+    }
+}
