@@ -1,7 +1,13 @@
 {
-    "name": "database",
+    "name": "@repo/database",
     "version": "0.0.0",
     "private": true,
+    "exports": {
+        ".": "./src/index.ts"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
     "scripts": {
         "db:generate": "drizzle-kit generate",
         "db:push": "drizzle-kit push",
@@ -18,7 +24,6 @@
         "drizzle-orm": "^0.39.3"
     },
     "devDependencies": {
-        "@repo/eslint-config": "workspace:*",
         "@repo/typescript-config": "workspace:*",
         "drizzle-kit": "^0.30.4",
         "tsx": "^4.19.3"

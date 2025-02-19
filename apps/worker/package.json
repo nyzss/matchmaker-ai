@@ -1,14 +1,19 @@
 {
     "name": "worker",
+    "exports": {
+        ".": "./src/index.ts"
+    },
     "scripts": {
         "dev": "wrangler dev",
         "deploy": "wrangler deploy --minify"
     },
     "dependencies": {
-        "hono": "^4.7.2"
+        "hono": "^4.7.2",
+        "@repo/database": "workspace:*"
     },
     "devDependencies": {
         "@cloudflare/workers-types": "^4.20250109.0",
+        "@repo/typescript-config": "workspace:*",
         "wrangler": "^3.101.0"
     }
 }
