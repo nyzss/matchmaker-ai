@@ -1,7 +1,12 @@
-import db from ".";
+import { createDb } from ".";
 import { jobTable } from "./db/schema";
 
 async function main() {
+    if (!process.env.DATABASE_URL) {
+        throw new Error("DATABASE_URL is not defined");
+    }
+    const db = createDb({ DATABASE_URL: process.env.DATABASE_URL });
+
     // customer support at Doctolib
     const job: typeof jobTable.$inferInsert = {
         title: "Customer Support",

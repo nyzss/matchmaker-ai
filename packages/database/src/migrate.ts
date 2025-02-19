@@ -2,13 +2,13 @@ import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
 import { migrate } from "drizzle-orm/neon-http/migrator";
 import "dotenv/config";
+import { createDb } from ".";
 
 if (!process.env.DATABASE_URL) {
     throw new Error("DATABASE_URL is not defined");
 }
 
-const sql = neon(process.env.DATABASE_URL);
-const db = drizzle(sql);
+const db = createDb({ DATABASE_URL: process.env.DATABASE_URL });
 
 const main = async () => {
     try {

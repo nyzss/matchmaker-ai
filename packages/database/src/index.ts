@@ -1,12 +1,18 @@
-import "dotenv/config";
 import { drizzle } from "drizzle-orm/neon-http";
-import * as dotenv from "dotenv";
 import { applicationTable, userTable, jobTable } from "./db/schema";
+import { neon } from "@neondatabase/serverless";
 
-dotenv.config();
+type Env = {
+    DATABASE_URL: string;
+};
 
-const db = drizzle(process.env.DATABASE_URL!);
+const createDb = (env: Env) => {
+    if (!env.DATABASE_URL) {
+        throw new Error("DATABASE_URL is not defined");
+    }
+    const sql = neon(env.DATABASE_URL);
+    const db = drizzle(sql);
+    return db;
+};
 
-export default db;
-
-export { jobTable, userTable, applicationTable, db };
+export { jobTable, userTable, applicationTable, createDb };
