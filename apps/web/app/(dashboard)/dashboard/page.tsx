@@ -5,7 +5,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 export default function DashboardPage() {
     const searchParams = useSearchParams();
-    const status = searchParams.get("status");
+    const status = searchParams.get("status") as
+        | "in_review"
+        | "done"
+        | "canceled"
+        | undefined;
 
     const { data, isPending } = useQuery({
         queryKey: ["applications", status],

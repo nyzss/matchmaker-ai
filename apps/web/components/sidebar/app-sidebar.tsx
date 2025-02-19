@@ -50,19 +50,19 @@ const data = {
                     icon: Users,
                 },
                 {
-                    title: "Accepted",
-                    url: "/dashboard?status=accepted",
+                    title: "In Review",
+                    url: "/dashboard?status=in_review",
+                    icon: Clock,
+                },
+                {
+                    title: "Done",
+                    url: "/dashboard?status=done",
                     icon: BadgeCheck,
                 },
                 {
-                    title: "Rejected",
-                    url: "/dashboard?status=rejected",
+                    title: "Canceled",
+                    url: "/dashboard?status=canceled",
                     icon: X,
-                },
-                {
-                    title: "Pending",
-                    url: "/dashboard?status=pending",
-                    icon: Clock,
                 },
             ],
         },
