@@ -1,20 +1,24 @@
 {
-    "name": "@repo/database",
-    "version": "1.0.0",
-    "description": "",
-    "main": "index.js",
+    "name": "database",
+    "version": "0.0.0",
+    "private": true,
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "db:generate": "drizzle-kit generate:pg",
+        "db:push": "drizzle-kit push:pg",
+        "db:migrate": "tsx src/migrate.ts",
+        "db:studio": "drizzle-kit studio",
+        "db:check": "drizzle-kit check",
+        "lint": "eslint .",
+        "type-check": "tsc --noEmit"
     },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
     "dependencies": {
         "@neondatabase/serverless": "^0.10.4",
         "dotenv": "^16.4.7",
         "drizzle-orm": "^0.39.3"
     },
     "devDependencies": {
+        "@repo/eslint-config": "workspace:*",
+        "@repo/typescript-config": "workspace:*",
         "drizzle-kit": "^0.30.4",
         "tsx": "^4.19.3"
     }

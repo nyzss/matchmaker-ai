@@ -2,6 +2,9 @@ import "dotenv/config";
 import { drizzle } from "drizzle-orm/neon-http";
 import { eq } from "drizzle-orm";
 import { postsTable } from "./db/schema";
+import * as dotenv from "dotenv";
+
+dotenv.config();
 
 const db = drizzle(process.env.DATABASE_URL!);
 
