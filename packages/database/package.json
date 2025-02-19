@@ -8,6 +8,7 @@
         "db:migrate": "tsx src/migrate.ts",
         "db:studio": "drizzle-kit studio",
         "db:check": "drizzle-kit check",
+        "db:seed": "tsx src/seed.ts",
         "lint": "eslint .",
         "type-check": "tsc --noEmit"
     },
