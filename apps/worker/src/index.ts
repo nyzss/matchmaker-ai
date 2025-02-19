@@ -3,6 +3,7 @@ import { cors } from "hono/cors";
 import { createAuth } from "@repo/auth";
 import { createDb } from "@repo/database";
 import applications from "./routes/applications";
+import jobs from "./routes/job";
 
 export interface HonoType {
     Bindings: {
@@ -61,8 +62,7 @@ app.on(["POST", "GET"], "/auth/**", (c) => {
     return auth.handler(c.req.raw);
 });
 
-const router = app.route("/applications", applications);
-
+const router = app.route("/applications", applications).route("/jobs", jobs);
 export default app;
 
 export type AppType = typeof router;

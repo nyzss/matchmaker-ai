@@ -40,28 +40,28 @@ const data = {
     navMain: [
         {
             title: "Candidates",
-            url: "#",
+            url: "/dashboard",
             icon: Bot,
             isActive: true,
             items: [
                 {
                     title: "All",
-                    url: "#",
+                    url: "/dashboard",
                     icon: Users,
                 },
                 {
                     title: "Accepted",
-                    url: "#",
+                    url: "/dashboard?status=accepted",
                     icon: BadgeCheck,
                 },
                 {
                     title: "Rejected",
-                    url: "#",
+                    url: "/dashboard?status=rejected",
                     icon: X,
                 },
                 {
                     title: "Pending",
-                    url: "#",
+                    url: "/dashboard?status=pending",
                     icon: Clock,
                 },
             ],

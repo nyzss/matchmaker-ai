@@ -1,11 +1,11 @@
 import { Hono } from "hono";
-import { applicationsTable, createDb, jobTable } from "@repo/database";
+import { createDb, jobTable } from "@repo/database";
 import { env } from "hono/adapter";
 import { HonoType } from "../index.js";
 
-export const applications = new Hono<HonoType>();
+export const job = new Hono<HonoType>();
 
-const route = applications.get("/", async (c) => {
+const route = job.get("/", async (c) => {
     const user = c.get("user");
 
     if (!user) {
@@ -13,9 +13,9 @@ const route = applications.get("/", async (c) => {
     }
 
     const db = createDb(env(c));
-    const applications = await db.select().from(applicationsTable);
+    const jobs = await db.select().from(jobTable);
 
-    return c.json({ applications });
+    return c.json({ jobs });
 });
 
 export default route;

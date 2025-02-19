@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, type LucideIcon } from "lucide-react";
+import { Briefcase, ChevronRight, type LucideIcon } from "lucide-react";
 
 import {
     Collapsible,
@@ -17,6 +17,7 @@ import {
     SidebarMenuSubButton,
     SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+import Link from "next/link";
 
 export function NavMain({
     items,
@@ -57,12 +58,12 @@ export function NavMain({
                                     {item.items?.map((subItem) => (
                                         <SidebarMenuSubItem key={subItem.title}>
                                             <SidebarMenuSubButton asChild>
-                                                <a href={subItem.url}>
+                                                <Link href={subItem.url}>
                                                     {subItem.icon && (
                                                         <subItem.icon />
                                                     )}
                                                     <span>{subItem.title}</span>
-                                                </a>
+                                                </Link>
                                             </SidebarMenuSubButton>
                                         </SidebarMenuSubItem>
                                     ))}
@@ -71,6 +72,18 @@ export function NavMain({
                         </SidebarMenuItem>
                     </Collapsible>
                 ))}
+                <SidebarMenuItem>
+                    <SidebarMenuButton
+                        tooltip="Jobs"
+                        className="cursor-pointer"
+                        asChild
+                    >
+                        <Link href="/dashboard/jobs">
+                            <Briefcase className="size-4" />
+                            <span>Jobs</span>
+                        </Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
             </SidebarMenu>
         </SidebarGroup>
     );

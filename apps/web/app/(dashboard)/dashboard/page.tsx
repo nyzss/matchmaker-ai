@@ -2,12 +2,19 @@
 
 import { client } from "@/lib/hc";
 import { useQuery } from "@tanstack/react-query";
-
+import { useSearchParams } from "next/navigation";
 export default function DashboardPage() {
+    const searchParams = useSearchParams();
+    const status = searchParams.get("status");
+
     const { data, isPending } = useQuery({
-        queryKey: ["applications"],
+        queryKey: ["applications", status],
         queryFn: async () => {
-            const res = await client.api.applications.$get();
+            const res = await client.api.applications.$get({
+                query: {
+                    status,
+                },
+            });
             return res.json();
         },
     });
