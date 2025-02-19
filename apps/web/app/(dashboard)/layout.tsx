@@ -11,7 +11,7 @@ import {
     SidebarProvider,
     SidebarTrigger,
 } from "@/components/ui/sidebar";
-
+import Provider from "@/lib/provider";
 export default function Layout({ children }: { children: React.ReactNode }) {
     return (
         <SidebarProvider>
@@ -35,7 +35,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                         </Breadcrumb>
                     </div>
                 </header>
-                <div className="px-2 sm:px-4">{children}</div>
+                <div className="px-2 sm:px-4">
+                    <Provider>{children}</Provider>
+                </div>
             </SidebarInset>
         </SidebarProvider>
     );
