@@ -9,7 +9,8 @@
     },
     "dependencies": {
         "hono": "^4.7.2",
-        "@repo/database": "workspace:*"
+        "@repo/database": "workspace:*",
+        "@repo/auth": "workspace:*"
     },
     "devDependencies": {
         "@cloudflare/workers-types": "^4.20250109.0",

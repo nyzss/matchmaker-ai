@@ -1,5 +1,13 @@
 import { drizzle } from "drizzle-orm/neon-http";
-import { applicationsTable, candidatesTable, jobTable } from "./db/schema";
+import {
+    applicationsTable,
+    candidatesTable,
+    jobTable,
+    userTable,
+    sessionTable,
+    accountTable,
+    verificationTable,
+} from "./db/schema";
 import { neon } from "@neondatabase/serverless";
 
 type Env = {
@@ -15,4 +23,13 @@ const createDb = (env: Env) => {
     return db;
 };
 
-export { jobTable, candidatesTable, applicationsTable, createDb };
+export {
+    jobTable,
+    candidatesTable,
+    applicationsTable,
+    createDb,
+    userTable,
+    sessionTable,
+    accountTable,
+    verificationTable,
+};

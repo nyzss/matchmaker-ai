@@ -1,9 +1,9 @@
 {
-    "name": "auth",
+    "name": "@repo/auth",
     "version": "0.0.0",
     "private": true,
     "exports": {
-        ".": "./src/main.ts"
+        ".": "./src/auth.ts"
     },
     "scripts": {
         "generate": "npx @better-auth/cli generate",
