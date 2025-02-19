@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     Card,
     CardContent,
@@ -11,9 +11,19 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LoginForm } from "@/components/auth/login";
 import { RegisterForm } from "@/components/auth/register";
+import { useSession } from "@/lib/auth";
+import { useRouter } from "next/navigation";
 
 export default function AuthPage() {
     const [activeTab, setActiveTab] = useState<"login" | "register">("login");
+    const router = useRouter();
+    const { data: session } = useSession();
+
+    useEffect(() => {
+        if (session) {
+            router.push("/");
+        }
+    }, [session, router]);
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-muted p-4">

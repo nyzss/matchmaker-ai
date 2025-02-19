@@ -1,9 +1,14 @@
 "use client";
 
+import { useSession } from "@/lib/auth";
+import { redirect } from "next/navigation";
+
 export default function Home() {
-    return (
-        <div>
-            <h1>Home</h1>
-        </div>
-    );
+    const { data: session } = useSession();
+
+    if (session) {
+        redirect("/dashboard");
+    } else {
+        redirect("/auth");
+    }
 }
