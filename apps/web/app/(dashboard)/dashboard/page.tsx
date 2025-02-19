@@ -16,7 +16,7 @@ export default function DashboardPage() {
         queryFn: async () => {
             const res = await client.api.applications.$get({
                 query: {
-                    status,
+                    status: status ?? undefined,
                 },
             });
             return res.json();

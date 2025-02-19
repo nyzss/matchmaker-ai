@@ -38,6 +38,18 @@ export function NavMain({
         <SidebarGroup>
             <SidebarGroupLabel>Platform</SidebarGroupLabel>
             <SidebarMenu>
+                <SidebarMenuItem>
+                    <SidebarMenuButton
+                        tooltip="Jobs"
+                        className="cursor-pointer"
+                        asChild
+                    >
+                        <Link href="/dashboard/jobs">
+                            <Briefcase className="size-4" />
+                            <span>Jobs</span>
+                        </Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
                 {items.map((item) => (
                     <Collapsible
                         key={item.title}
@@ -72,18 +84,6 @@ export function NavMain({
                         </SidebarMenuItem>
                     </Collapsible>
                 ))}
-                <SidebarMenuItem>
-                    <SidebarMenuButton
-                        tooltip="Jobs"
-                        className="cursor-pointer"
-                        asChild
-                    >
-                        <Link href="/dashboard/jobs">
-                            <Briefcase className="size-4" />
-                            <span>Jobs</span>
-                        </Link>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
             </SidebarMenu>
         </SidebarGroup>
     );
