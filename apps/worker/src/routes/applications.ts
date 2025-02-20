@@ -4,7 +4,7 @@ import { env } from "hono/adapter";
 import { HonoType } from "../index.js";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 
 export const applications = new Hono<HonoType>();
 
@@ -28,7 +28,8 @@ const route = applications.get(
         const applications = await db
             .select()
             .from(applicationsTable)
-            .where(status ? eq(applicationsTable.status, status) : undefined);
+            .where(status ? eq(applicationsTable.status, status) : undefined)
+            .orderBy(desc(applicationsTable.createdAt));
 
         return c.json({ applications });
     }

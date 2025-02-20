@@ -9,7 +9,7 @@ import {
     createDb,
     jobTable,
 } from "@repo/database";
-import { and, eq, InferSelectModel, lt } from "drizzle-orm";
+import { and, eq, InferSelectModel, lt, sql } from "drizzle-orm";
 
 type evaluateCandidate = {
     data: {
@@ -171,7 +171,7 @@ export const checkApplications = inngest.createFunction(
                     eq(applicationsTable.status, "in_review"),
                     lt(
                         applicationsTable.createdAt,
-                        new Date(Date.now() - 1000 * 60 * 60 * 24)
+                        sql`NOW() - INTERVAL '2 minutes'`
                     )
                 )
             );
