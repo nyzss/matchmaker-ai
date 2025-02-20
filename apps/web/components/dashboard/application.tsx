@@ -35,6 +35,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { client } from "@/lib/hc";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const statusColors = {
     in_review: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
@@ -161,6 +162,22 @@ export default function ApplicationCard({
                             {application.aiAnalysis}
                         </p>
                     </div>
+                    {(application.feedback && (
+                        <div className="space-y-1.5">
+                            <span className="text-sm font-medium text-primary">
+                                Recruiter Feedback
+                            </span>
+                            <p className="text-sm text-muted-foreground line-clamp-2">
+                                {application.feedback}
+                            </p>
+                        </div>
+                    )) || (
+                        <div className="flex justify-center">
+                            <span className="text-sm font-medium text-muted-foreground">
+                                No feedback provided yet
+                            </span>
+                        </div>
+                    )}
                 </div>
             </CardContent>
             <CardFooter className="flex-none gap-2 pt-6">
@@ -223,77 +240,179 @@ export default function ApplicationCard({
                             <Info className="h-4 w-4" />
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-2xl">
-                        <DialogHeader>
-                            <DialogTitle>Application Details</DialogTitle>
-                            <DialogDescription>
-                                Detailed information about the candidate and job
-                                position
-                            </DialogDescription>
-                        </DialogHeader>
-                        <div className="grid gap-6">
-                            {application.candidate && (
-                                <div className="space-y-2">
-                                    <h3 className="font-semibold">
-                                        Candidate Information
-                                    </h3>
-                                    <div className="rounded-lg border p-4 space-y-2">
-                                        <p>
-                                            <span className="font-medium">
-                                                Name:
-                                            </span>{" "}
-                                            {application.candidate.name}
-                                        </p>
-                                        <p>
-                                            <span className="font-medium">
-                                                Email:
-                                            </span>{" "}
-                                            {application.candidate.email}
-                                        </p>
-                                        <p>
-                                            <span className="font-medium">
-                                                Experience:
-                                            </span>{" "}
-                                            {application.candidate.experience}
-                                        </p>
-                                        <p>
-                                            <span className="font-medium">
-                                                Skills:
-                                            </span>{" "}
-                                            {application.candidate.skills}
-                                        </p>
+                    <DialogContent className="max-w-4xl max-h-[90vh] p-0 bg-background/95">
+                        <ScrollArea className="h-full max-h-[90vh]">
+                            <div className="p-6">
+                                <DialogHeader>
+                                    <DialogTitle>
+                                        Application Details
+                                    </DialogTitle>
+                                    <DialogDescription>
+                                        Detailed information about the
+                                        application, candidate and job position
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <div className="mt-6 space-y-6">
+                                    <div className="space-y-2">
+                                        <h3 className="font-semibold">
+                                            Application Information
+                                        </h3>
+                                        <div className="rounded-lg border p-4 space-y-2">
+                                            <p>
+                                                <span className="font-medium">
+                                                    ID:
+                                                </span>{" "}
+                                                {application.id}
+                                            </p>
+                                            <p>
+                                                <span className="font-medium">
+                                                    Status:
+                                                </span>{" "}
+                                                <Badge
+                                                    variant="secondary"
+                                                    className={
+                                                        statusColors[
+                                                            application.status as keyof typeof statusColors
+                                                        ]
+                                                    }
+                                                >
+                                                    {application.status.replace(
+                                                        "_",
+                                                        " "
+                                                    )}
+                                                </Badge>
+                                            </p>
+                                            <p>
+                                                <span className="font-medium">
+                                                    Created:
+                                                </span>{" "}
+                                                {new Date(
+                                                    application.createdAt
+                                                ).toLocaleString()}
+                                            </p>
+                                            <p>
+                                                <span className="font-medium">
+                                                    Last Updated:
+                                                </span>{" "}
+                                                {new Date(
+                                                    application.updatedAt
+                                                ).toLocaleString()}
+                                            </p>
+                                            <p>
+                                                <span className="font-medium">
+                                                    Match Score:
+                                                </span>{" "}
+                                                {application.matchScore}%
+                                            </p>
+                                            <div className="space-y-1">
+                                                <span className="font-medium">
+                                                    AI Analysis:
+                                                </span>
+                                                <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                                                    {application.aiAnalysis}
+                                                </p>
+                                            </div>
+                                            {application.feedback ? (
+                                                <div className="space-y-1 rounded-md bg-primary/5 p-3 border-l-2 border-primary">
+                                                    <span className="font-medium text-primary">
+                                                        Recruiter Feedback
+                                                    </span>
+                                                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                                                        {application.feedback}
+                                                    </p>
+                                                </div>
+                                            ) : application.status ===
+                                              "in_review" ? (
+                                                <div className="space-y-1 rounded-md bg-muted p-3">
+                                                    <span className="font-medium text-muted-foreground">
+                                                        No feedback provided yet
+                                                    </span>
+                                                    <p className="text-sm text-muted-foreground">
+                                                        Click the "Provide
+                                                        Feedback" button to add
+                                                        your assessment.
+                                                    </p>
+                                                </div>
+                                            ) : null}
+                                        </div>
                                     </div>
-                                </div>
-                            )}
 
-                            {application.job && (
-                                <div className="space-y-2">
-                                    <h3 className="font-semibold">
-                                        Job Information
-                                    </h3>
-                                    <div className="rounded-lg border p-4 space-y-2">
-                                        <p>
-                                            <span className="font-medium">
-                                                Title:
-                                            </span>{" "}
-                                            {application.job.title}
-                                        </p>
-                                        <p>
-                                            <span className="font-medium">
-                                                Company:
-                                            </span>{" "}
-                                            {application.job.company}
-                                        </p>
-                                        <p>
-                                            <span className="font-medium">
-                                                Description:
-                                            </span>{" "}
-                                            {application.job.description}
-                                        </p>
-                                    </div>
+                                    {application.candidate && (
+                                        <div className="space-y-2">
+                                            <h3 className="font-semibold">
+                                                Candidate Information
+                                            </h3>
+                                            <div className="rounded-lg border p-4 space-y-2">
+                                                <p>
+                                                    <span className="font-medium">
+                                                        Name:
+                                                    </span>{" "}
+                                                    {application.candidate.name}
+                                                </p>
+                                                <p>
+                                                    <span className="font-medium">
+                                                        Email:
+                                                    </span>{" "}
+                                                    {
+                                                        application.candidate
+                                                            .email
+                                                    }
+                                                </p>
+                                                <p>
+                                                    <span className="font-medium">
+                                                        Experience:
+                                                    </span>{" "}
+                                                    {
+                                                        application.candidate
+                                                            .experience
+                                                    }
+                                                </p>
+                                                <p>
+                                                    <span className="font-medium">
+                                                        Skills:
+                                                    </span>{" "}
+                                                    {
+                                                        application.candidate
+                                                            .skills
+                                                    }
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {application.job && (
+                                        <div className="space-y-2">
+                                            <h3 className="font-semibold">
+                                                Job Information
+                                            </h3>
+                                            <div className="rounded-lg border p-4 space-y-2">
+                                                <p>
+                                                    <span className="font-medium">
+                                                        Title:
+                                                    </span>{" "}
+                                                    {application.job.title}
+                                                </p>
+                                                <p>
+                                                    <span className="font-medium">
+                                                        Company:
+                                                    </span>{" "}
+                                                    {application.job.company}
+                                                </p>
+                                                <p>
+                                                    <span className="font-medium">
+                                                        Description:
+                                                    </span>{" "}
+                                                    {
+                                                        application.job
+                                                            .description
+                                                    }
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-                            )}
-                        </div>
+                            </div>
+                        </ScrollArea>
                     </DialogContent>
                 </Dialog>
             </CardFooter>
