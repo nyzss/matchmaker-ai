@@ -8,6 +8,9 @@ import { useQuery } from "@tanstack/react-query";
 import { InferResponseType } from "hono";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export type Application = Extract<
     InferResponseType<typeof client.api.applications.$get>,
@@ -30,7 +33,7 @@ export default function DashboardPage() {
         | "canceled"
         | undefined;
 
-    const { data, isPending } = useQuery<ApplicationResponse>({
+    const { data, isPending, refetch } = useQuery<ApplicationResponse>({
         queryKey: ["applications", status],
         queryFn: async () => {
             const res = await client.api.applications.$get({
@@ -63,11 +66,27 @@ export default function DashboardPage() {
     }
 
     return (
-        <div className="space-y-8 px-4 sm:px-6 lg:px-8">
+        <div className="space-y-8 pr-5 sm:pr-0 sm:px-6 lg:px-8">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                    Applications
-                </h1>
+                <div className="flex items-center gap-4">
+                    <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                        Applications
+                    </h1>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => refetch()}
+                        disabled={isPending}
+                    >
+                        <RefreshCw
+                            className={cn(
+                                "h-4 w-4",
+                                isPending && "animate-spin"
+                            )}
+                        />
+                        <span className="sr-only">Refresh applications</span>
+                    </Button>
+                </div>
                 <Tabs
                     defaultValue={status ?? "in_review"}
                     className="w-full sm:w-[400px]"

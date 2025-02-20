@@ -1,3 +1,6 @@
+import type { Application } from "@/app/(dashboard)/dashboard/page";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
     Card,
     CardContent,
@@ -6,11 +9,6 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { CalendarIcon, UserIcon, BriefcaseIcon, Info } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
-import type { Application } from "@/app/(dashboard)/dashboard/page";
 import {
     Dialog,
     DialogContent,
@@ -27,15 +25,17 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { client } from "@/lib/hc";
 import { cn } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { formatDistanceToNow } from "date-fns";
+import { BriefcaseIcon, CalendarIcon, Info, UserIcon } from "lucide-react";
 import { useState } from "react";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 
 const statusColors = {
     in_review: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
@@ -210,6 +210,15 @@ export default function ApplicationCard({
                                                     placeholder="Enter your feedback here..."
                                                     className="min-h-[150px]"
                                                     {...field}
+                                                    onKeyDown={(e) => {
+                                                        if (
+                                                            e.key === "Enter" &&
+                                                            !e.shiftKey
+                                                        ) {
+                                                            e.preventDefault();
+                                                            handleSubmit();
+                                                        }
+                                                    }}
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -240,7 +249,7 @@ export default function ApplicationCard({
                             <Info className="h-4 w-4" />
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-4xl max-h-[90vh] p-0 bg-background/95">
+                    <DialogContent className="max-w-4xl max-h-[90vh] p-0">
                         <ScrollArea className="h-full max-h-[90vh]">
                             <div className="p-6">
                                 <DialogHeader>
@@ -325,12 +334,12 @@ export default function ApplicationCard({
                                               "in_review" ? (
                                                 <div className="space-y-1 rounded-md bg-muted p-3">
                                                     <span className="font-medium text-muted-foreground">
-                                                        No feedback provided yet
+                                                        No feedback provided
                                                     </span>
                                                     <p className="text-sm text-muted-foreground">
-                                                        Click the "Provide
-                                                        Feedback" button to add
-                                                        your assessment.
+                                                        Click the &quot;Provide
+                                                        Feedback&quot; button to
+                                                        add your assessment.
                                                     </p>
                                                 </div>
                                             ) : null}
