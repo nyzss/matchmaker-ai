@@ -3,6 +3,7 @@ import { and, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { env } from "hono/adapter";
 import { HonoType } from "../index.js";
+import { WebClient } from "@slack/web-api";
 export const slack = new Hono<HonoType>();
 
 const route = slack
@@ -34,10 +35,21 @@ const route = slack
                 )
             )
             .returning();
+        const slack = new WebClient(env(c).SLACK_BOT_TOKEN);
 
         if (!applications || applications.length === 0) {
+            await slack.chat.postMessage({
+                channel: "C08E9RZARB5",
+                text: `Application '${applicationId}' was cancelled due to no feedback within the 2 minutes window.`,
+            });
+
             return c.json({ error: "Application not found" }, 404);
         }
+
+        await slack.chat.postMessage({
+            channel: "C08E9RZARB5",
+            text: `Application '${applicationId}' was approved with the following feedback: "${feedback}"`,
+        });
 
         return c.json({
             message: "Slack message received",
