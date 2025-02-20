@@ -1,29 +1,47 @@
+import { applicationsTable, createDb } from "@repo/database";
+import { and, eq } from "drizzle-orm";
 import { Hono } from "hono";
-import { createDb, jobTable } from "@repo/database";
 import { env } from "hono/adapter";
 import { HonoType } from "../index.js";
-
 export const slack = new Hono<HonoType>();
 
 const route = slack
     .get("/", async (c) => {
-        const text = await c.req.text();
-        console.log("SLACK GET RECEIVED", text);
+        const text: { payload: string } = await c.req.parseBody();
+
+        const json = JSON.parse(text.payload);
+        console.log("SLACK GET RECEIVED, GET", json);
         return c.json({
             message: "Slack message received",
-            body: text,
+            body: json,
         });
     })
     .post("/", async (c) => {
-        const text = await c.req.text();
-        console.log("SLACK MESSAGE RECEIVED", text);
-        // const db = createDb(env(c));
+        const text: { payload: string } = await c.req.parseBody();
+        const json = JSON.parse(text.payload).actions;
 
-        // const jobs = await db.select().from(jobTable);
+        const applicationId = json[0].action_id;
+        const feedback = json[0].value;
+
+        const db = createDb(env(c));
+        const applications = await db
+            .update(applicationsTable)
+            .set({ status: "done", feedback })
+            .where(
+                and(
+                    eq(applicationsTable.id, applicationId),
+                    eq(applicationsTable.status, "in_review")
+                )
+            )
+            .returning();
+
+        if (!applications || applications.length === 0) {
+            return c.json({ error: "Application not found" }, 404);
+        }
 
         return c.json({
             message: "Slack message received",
-            body: text,
+            body: json,
         });
     });
 

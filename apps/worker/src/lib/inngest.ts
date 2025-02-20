@@ -164,6 +164,7 @@ export const evaluateCandidate = inngest.createFunction(
                 }
                 await slack.chat.postMessage({
                     channel: "C08E9RZARB5",
+                    text: "New Candidate Evaluation",
                     blocks: [
                         {
                             type: "section",
@@ -173,10 +174,11 @@ export const evaluateCandidate = inngest.createFunction(
                             },
                         },
                         {
+                            dispatch_action: true,
                             type: "input",
                             element: {
                                 type: "plain_text_input",
-                                action_id: "recruiter_feedback",
+                                action_id: application[0].id,
                                 placeholder: {
                                     type: "plain_text",
                                     text: "Enter your feedback here",
@@ -184,20 +186,16 @@ export const evaluateCandidate = inngest.createFunction(
                             },
                             label: {
                                 type: "plain_text",
-                                text: "Recruiter Feedback",
+                                text: "Feedback",
+                                emoji: true,
                             },
                         },
                         {
-                            type: "actions",
+                            type: "context",
                             elements: [
                                 {
-                                    type: "button",
-                                    text: {
-                                        type: "plain_text",
-                                        text: "Submit Feedback",
-                                    },
-                                    action_id: `submit_feedback_${application[0].id}`,
-                                    style: "primary",
+                                    type: "plain_text",
+                                    text: application[0].id,
                                 },
                             ],
                         },
