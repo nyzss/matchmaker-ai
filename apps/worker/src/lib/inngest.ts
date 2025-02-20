@@ -155,6 +155,57 @@ export const evaluateCandidate = inngest.createFunction(
             )
         );
 
+        if (env.SLACK_BOT_TOKEN) {
+            const slack = new WebClient(env.SLACK_BOT_TOKEN);
+
+            for (const application of applications) {
+                if (!application[0]) {
+                    continue;
+                }
+                await slack.chat.postMessage({
+                    channel: "C08E9RZARB5",
+                    blocks: [
+                        {
+                            type: "section",
+                            text: {
+                                type: "mrkdwn",
+                                text: `*New Candidate Evaluation*\n\nCandidate: ${candidate.name}\nMatch Score: ${application[0].matchScore}\nAI Analysis: ${application[0].aiAnalysis}`,
+                            },
+                        },
+                        {
+                            type: "input",
+                            element: {
+                                type: "plain_text_input",
+                                action_id: "recruiter_feedback",
+                                placeholder: {
+                                    type: "plain_text",
+                                    text: "Enter your feedback here",
+                                },
+                            },
+                            label: {
+                                type: "plain_text",
+                                text: "Recruiter Feedback",
+                            },
+                        },
+                        {
+                            type: "actions",
+                            elements: [
+                                {
+                                    type: "button",
+                                    text: {
+                                        type: "plain_text",
+                                        text: "Submit Feedback",
+                                    },
+                                    action_id: `submit_feedback_${application[0].id}`,
+                                    style: "primary",
+                                },
+                            ],
+                        },
+                    ],
+                });
+            }
+        }
+
         return { message: "Candidate evaluated", applications };
     }
 );
@@ -218,7 +269,6 @@ export const sendSlackMessage = inngest.createFunction(
         return { message: "Slack message sent", result };
     }
 );
-
 export const functions = [
     createCandidate,
     evaluateCandidate,

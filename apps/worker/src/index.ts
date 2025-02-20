@@ -7,6 +7,7 @@ import jobs from "./routes/job";
 import { functions } from "./lib/inngest";
 import { inngest } from "./lib/inngest";
 import { serve } from "inngest/hono";
+import slack from "./routes/slack";
 
 export interface HonoType extends Env {
     Bindings: {
@@ -76,7 +77,10 @@ app.on(
     })
 );
 
-const router = app.route("/applications", applications).route("/jobs", jobs);
+const router = app
+    .route("/applications", applications)
+    .route("/jobs", jobs)
+    .route("/slack", slack);
 export default app;
 
 export type AppType = typeof router;
