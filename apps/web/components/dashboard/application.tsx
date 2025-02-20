@@ -31,9 +31,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { client } from "@/lib/hc";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 const statusColors = {
     in_review: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
@@ -52,6 +53,8 @@ export default function ApplicationCard({
 }: {
     application: Application;
 }) {
+    const queryClient = useQueryClient();
+    const [dialogOpen, setDialogOpen] = useState(false);
     const form = useForm<FeedbackForm>({
         resolver: zodResolver(feedbackSchema),
         defaultValues: {
@@ -72,18 +75,21 @@ export default function ApplicationCard({
             });
             return res.json();
         },
+        onSuccess: () => {
+            form.reset();
+            queryClient.invalidateQueries({
+                queryKey: ["applications"],
+            });
+            setDialogOpen(false);
+        },
     });
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        form.handleSubmit((data) => {
-            feedbackMutation.mutate({
-                applicationId: application.id,
-                feedback: data.feedback,
-            });
-        })();
-        form.reset();
-    };
+    const handleSubmit = form.handleSubmit((data) => {
+        feedbackMutation.mutate({
+            applicationId: application.id,
+            feedback: data.feedback,
+        });
+    });
 
     return (
         <Card className="flex flex-col">
@@ -158,7 +164,7 @@ export default function ApplicationCard({
                 </div>
             </CardContent>
             <CardFooter className="flex-none gap-2 pt-6">
-                <Dialog>
+                <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                     <DialogTrigger asChild>
                         {application.status === "in_review" && (
                             <Button className="flex-1" variant="default">
