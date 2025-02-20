@@ -1,13 +1,16 @@
 import { Inngest, InngestMiddleware } from "inngest";
 import { HonoType } from "..";
+import { createLLM } from "./llm";
+import { createDb } from "@repo/database";
+import { z } from "zod";
 
 const bindings = new InngestMiddleware({
     name: "Cloudflare Workers bindings",
-    init({ client, fn }) {
+    init() {
         return {
-            onFunctionRun({ ctx, fn, steps, reqArgs }) {
+            onFunctionRun({ reqArgs }) {
                 return {
-                    transformInput({ ctx, fn, steps }) {
+                    transformInput() {
                         const envArgs: any = reqArgs.filter(
                             (arg: any) => arg.env
                         );
@@ -29,15 +32,34 @@ export const inngest = new Inngest({
     middleware: [bindings],
 });
 
+const candidateSchema = z.object({
+    name: z.string().describe("The name of the candidate"),
+    email: z.string().describe("The email of the candidate"),
+    experience: z.string().describe("The experience of the candidate"),
+    skills: z.string().describe("The skills of the candidate"),
+});
+
 const helloWorld = inngest.createFunction(
     { id: "hello-world" },
     // { cron: "*/10 * * * *" },
     { event: "test/hello-world" },
     async ({ event, step, env }) => {
-        const key = env.OPENAI_API_KEY;
-        await step.sleep("wait-a-bit", 1000);
-        console.log("Hello world from inngest at", new Date().toISOString());
-        return { message: `Hello, world! ${new Date().toISOString()} ${key}` };
+        const llm = createLLM(env.OPENAI_API_KEY).withStructuredOutput(
+            candidateSchema,
+            {
+                name: "create_candidate",
+                strict: true,
+            }
+        );
+        // const db = createDb({ DATABASE_URL: env.DATABASE_URL });
+
+        const candidate = await llm.invoke(
+            "Create a candidate profile for a customer support role at Doctolib"
+        );
+
+        console.log("CANDIDATE", candidate);
+
+        return { message: candidate };
     }
 );
 
