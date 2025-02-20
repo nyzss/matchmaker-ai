@@ -3,11 +3,17 @@ import { HonoType } from "..";
 
 import { z } from "zod";
 import { createLLM } from "./llm";
-import { candidatesTable, createDb, jobTable } from "@repo/database";
+import {
+    applicationsTable,
+    candidatesTable,
+    createDb,
+    jobTable,
+} from "@repo/database";
+import { and, eq, InferSelectModel, lt } from "drizzle-orm";
 
 type evaluateCandidate = {
     data: {
-        candidate: z.infer<typeof candidateSchema>;
+        candidate: InferSelectModel<typeof candidatesTable>;
     };
 };
 type Events = {
@@ -60,8 +66,8 @@ export const evaluationSchema = z.object({
 
 export const createCandidate = inngest.createFunction(
     { id: "create-candidate" },
-    { event: "pipeline/create-candidate" },
-    // { cron: "*/5 * * * *" },
+    // { event: "pipeline/create-candidate" },
+    { cron: "*/5 * * * *" },
     async ({ event, step, env }) => {
         const llm = createLLM(env.OPENAI_API_KEY).withStructuredOutput(
             candidateSchema,
@@ -72,18 +78,23 @@ export const createCandidate = inngest.createFunction(
         );
         const db = createDb({ DATABASE_URL: env.DATABASE_URL });
 
-        const candidate = await llm.invoke(
+        const createdCandidate = await llm.invoke(
             "Create a candidate profile for a customer support role at Doctolib"
         );
 
-        await db.insert(candidatesTable).values(candidate);
+        const candidate = await db
+            .insert(candidatesTable)
+            .values(createdCandidate)
+            .returning();
 
-        console.log("CANDIDATE", candidate);
+        if (!candidate[0]) {
+            throw new Error("Candidate not created");
+        }
 
         await inngest.send({
             name: "pipeline/evaluate-candidate",
             data: {
-                candidate,
+                candidate: candidate[0],
             },
         });
 
@@ -110,7 +121,7 @@ export const evaluateCandidate = inngest.createFunction(
 
         const evaluationList = await Promise.all(
             jobs.map(async (job) => {
-                return await llm.invoke([
+                const evaluation = await llm.invoke([
                     {
                         role: "system",
                         content: `You are a recruiter evaluating a candidate for the following job: ${job}`,
@@ -120,13 +131,64 @@ export const evaluateCandidate = inngest.createFunction(
                         content: `Candidate: ${candidate}`,
                     },
                 ]);
+                return {
+                    evaluation,
+                    jobId: job.id,
+                    userId: candidate,
+                };
             })
         );
 
-        console.log("EVALUATION", evaluationList);
+        const applications = await Promise.all(
+            evaluationList.map(
+                async (evaluation) =>
+                    await db
+                        .insert(applicationsTable)
+                        .values({
+                            ...evaluation.evaluation,
+                            jobId: evaluation.jobId,
+                            userId: evaluation.userId.id,
+                        })
+                        .returning()
+            )
+        );
 
-        return { message: "Candidate evaluated", evaluationList };
+        return { message: "Candidate evaluated", applications };
     }
 );
 
-export const functions = [createCandidate, evaluateCandidate];
+export const checkApplications = inngest.createFunction(
+    { id: "check-applications" },
+    { cron: "* * * * *" },
+    async ({ event, step, env }) => {
+        const db = createDb({ DATABASE_URL: env.DATABASE_URL });
+
+        const applications = await db
+            .select()
+            .from(applicationsTable)
+            .where(
+                and(
+                    eq(applicationsTable.status, "in_review"),
+                    lt(
+                        applicationsTable.createdAt,
+                        new Date(Date.now() - 1000 * 60 * 60 * 24)
+                    )
+                )
+            );
+
+        applications.forEach(async (application) => {
+            await db
+                .update(applicationsTable)
+                .set({ status: "canceled" })
+                .where(eq(applicationsTable.id, application.id));
+        });
+
+        return { message: "Applications checked", applications };
+    }
+);
+
+export const functions = [
+    createCandidate,
+    evaluateCandidate,
+    checkApplications,
+];
