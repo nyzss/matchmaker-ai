@@ -1,4 +1,4 @@
-import { Hono } from "hono";
+import { Env, Hono } from "hono";
 import { cors } from "hono/cors";
 import { createAuth } from "@repo/auth";
 import { createDb } from "@repo/database";
@@ -8,11 +8,12 @@ import { functions } from "./lib/inngest";
 import { inngest } from "./lib/inngest";
 import { serve } from "inngest/hono";
 
-export interface HonoType {
+export interface HonoType extends Env {
     Bindings: {
         DATABASE_URL: string;
         BETTER_AUTH_SECRET: string;
         BETTER_AUTH_URL: string;
+        OPENAI_API_KEY: string;
     };
     Variables: {
         user: ReturnType<typeof createAuth>["$Infer"]["Session"]["user"] | null;
