@@ -41,7 +41,6 @@ export const applicationsTable = pgTable("applications", {
     status: applicationStatus().default("in_review").notNull(),
     aiAnalysis: text().notNull(),
     matchScore: integer().notNull(),
-    feedback: text().notNull(),
     createdAt: timestamp().notNull().defaultNow(),
     updatedAt: timestamp().notNull().defaultNow(),
 });

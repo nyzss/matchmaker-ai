@@ -1,8 +1,20 @@
-import { Inngest, InngestMiddleware } from "inngest";
+import { EventSchemas, Inngest, InngestMiddleware } from "inngest";
 import { HonoType } from "..";
-import { createLLM } from "./llm";
-import { createDb } from "@repo/database";
+import { createCandidate, evaluateCandidate } from "./functions";
+import { candidateSchema } from "./functions";
 import { z } from "zod";
+
+type evaluateCandidate = {
+    data: {
+        candidate: z.infer<typeof candidateSchema>;
+    };
+};
+type Events = {
+    "pipeline/evaluate-candidate": evaluateCandidate;
+    "pipeline/create-candidate": {
+        data: {};
+    };
+};
 
 const bindings = new InngestMiddleware({
     name: "Cloudflare Workers bindings",
@@ -30,37 +42,7 @@ const bindings = new InngestMiddleware({
 export const inngest = new Inngest({
     id: "matchmaker-ai",
     middleware: [bindings],
+    schemas: new EventSchemas().fromRecord<Events>(),
 });
 
-const candidateSchema = z.object({
-    name: z.string().describe("The name of the candidate"),
-    email: z.string().describe("The email of the candidate"),
-    experience: z.string().describe("The experience of the candidate"),
-    skills: z.string().describe("The skills of the candidate"),
-});
-
-const helloWorld = inngest.createFunction(
-    { id: "hello-world" },
-    // { cron: "*/10 * * * *" },
-    { event: "test/hello-world" },
-    async ({ event, step, env }) => {
-        const llm = createLLM(env.OPENAI_API_KEY).withStructuredOutput(
-            candidateSchema,
-            {
-                name: "create_candidate",
-                strict: true,
-            }
-        );
-        // const db = createDb({ DATABASE_URL: env.DATABASE_URL });
-
-        const candidate = await llm.invoke(
-            "Create a candidate profile for a customer support role at Doctolib"
-        );
-
-        console.log("CANDIDATE", candidate);
-
-        return { message: candidate };
-    }
-);
-
-export const functions = [helloWorld];
+export const functions = [createCandidate, evaluateCandidate];
