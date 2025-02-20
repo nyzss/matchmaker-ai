@@ -4,6 +4,9 @@ import { createAuth } from "@repo/auth";
 import { createDb } from "@repo/database";
 import applications from "./routes/applications";
 import jobs from "./routes/job";
+import { functions } from "./lib/inngest";
+import { inngest } from "./lib/inngest";
+import { serve } from "inngest/hono";
 
 export interface HonoType {
     Bindings: {
@@ -61,6 +64,15 @@ app.on(["POST", "GET"], "/auth/**", (c) => {
     });
     return auth.handler(c.req.raw);
 });
+
+app.on(
+    ["GET", "PUT", "POST"],
+    "/inngest",
+    serve({
+        client: inngest,
+        functions,
+    })
+);
 
 const router = app.route("/applications", applications).route("/jobs", jobs);
 export default app;
