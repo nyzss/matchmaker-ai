@@ -10,6 +10,7 @@ import {
     jobTable,
 } from "@repo/database";
 import { and, eq, InferSelectModel, lt, sql } from "drizzle-orm";
+import { WebClient } from "@slack/web-api";
 
 type evaluateCandidate = {
     data: {
@@ -20,6 +21,11 @@ type Events = {
     "pipeline/evaluate-candidate": evaluateCandidate;
     "pipeline/create-candidate": {
         data: {};
+    };
+    "pipeline/send-slack-message": {
+        data: {
+            message: string;
+        };
     };
 };
 
@@ -183,8 +189,39 @@ export const checkApplications = inngest.createFunction(
     }
 );
 
+export const sendSlackMessage = inngest.createFunction(
+    { id: "send-slack-message" },
+    { event: "pipeline/send-slack-message" },
+    async ({ event, step, env }) => {
+        const message = event.data.message;
+
+        console.log(env.SLACK_BOT_TOKEN);
+        if (!env.SLACK_BOT_TOKEN) {
+            throw new Error("SLACK_BOT_TOKEN is not set");
+        }
+
+        const slack = new WebClient(env.SLACK_BOT_TOKEN);
+
+        const result = await slack.chat.postMessage({
+            channel: "C08E9RZARB5",
+            blocks: [
+                {
+                    type: "section",
+                    text: {
+                        type: "mrkdwn",
+                        text: message,
+                    },
+                },
+            ],
+        });
+
+        return { message: "Slack message sent", result };
+    }
+);
+
 export const functions = [
     createCandidate,
     evaluateCandidate,
     checkApplications,
+    sendSlackMessage,
 ];
