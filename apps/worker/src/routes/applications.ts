@@ -4,7 +4,7 @@ import { env } from "hono/adapter";
 import { HonoType } from "../index.js";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 
 export const applications = new Hono<HonoType>();
 
@@ -62,7 +62,12 @@ const route = applications
             const applications = await db
                 .update(applicationsTable)
                 .set({ status: "done", feedback })
-                .where(eq(applicationsTable.id, applicationId))
+                .where(
+                    and(
+                        eq(applicationsTable.id, applicationId),
+                        eq(applicationsTable.status, "in_review")
+                    )
+                )
                 .returning();
 
             if (!applications || applications.length === 0) {
