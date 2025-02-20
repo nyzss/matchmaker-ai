@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
     integer,
     pgTable,
@@ -37,13 +38,38 @@ export const candidatesTable = pgTable("candidates", {
 export const applicationsTable = pgTable("applications", {
     id: uuid("id").primaryKey().defaultRandom(),
     jobId: uuid("job_id").references(() => jobTable.id),
-    userId: uuid("user_id").references(() => candidatesTable.id),
+    candidateId: uuid("candidate_id").references(() => candidatesTable.id),
     status: applicationStatus().default("in_review").notNull(),
     aiAnalysis: text().notNull(),
     matchScore: integer().notNull(),
+    feedback: text(),
     createdAt: timestamp().notNull().defaultNow(),
     updatedAt: timestamp().notNull().defaultNow(),
 });
+
+export const applicationsRelations = relations(
+    applicationsTable,
+    ({ one }) => ({
+        job: one(jobTable, {
+            fields: [applicationsTable.jobId],
+            references: [jobTable.id],
+        }),
+        candidate: one(candidatesTable, {
+            fields: [applicationsTable.candidateId],
+            references: [candidatesTable.id],
+        }),
+    })
+);
+
+export const candidatesRelations = relations(candidatesTable, ({ many }) => ({
+    applications: many(applicationsTable),
+}));
+
+export const jobsRelations = relations(jobTable, ({ many }) => ({
+    applications: many(applicationsTable),
+}));
+
+// ########## Better Auth Schema ##########
 
 export const userTable = pgTable("user", {
     id: text("id").primaryKey(),

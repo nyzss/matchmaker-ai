@@ -7,6 +7,10 @@ import {
     sessionTable,
     accountTable,
     verificationTable,
+    applicationStatus,
+    applicationsRelations,
+    candidatesRelations,
+    jobsRelations,
 } from "./db/schema";
 import { neon } from "@neondatabase/serverless";
 
@@ -19,7 +23,21 @@ const createDb = (env: Env) => {
         throw new Error("DATABASE_URL is not defined");
     }
     const sql = neon(env.DATABASE_URL);
-    const db = drizzle(sql);
+    const db = drizzle(sql, {
+        schema: {
+            applications: applicationsTable,
+            candidates: candidatesTable,
+            jobs: jobTable,
+            user: userTable,
+            session: sessionTable,
+            account: accountTable,
+            verification: verificationTable,
+            applicationStatus,
+            applicationsRelations,
+            candidatesRelations,
+            jobsRelations,
+        },
+    });
     return db;
 };
 

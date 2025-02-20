@@ -157,7 +157,7 @@ export default function DashboardPage() {
                                             <div className="flex items-center gap-1.5">
                                                 <UserIcon className="h-4 w-4 text-muted-foreground" />
                                                 <span className="text-muted-foreground">
-                                                    {application.userId?.slice(
+                                                    {application.candidateId?.slice(
                                                         0,
                                                         8
                                                     ) ?? "No User"}

@@ -132,9 +132,9 @@ export const evaluateCandidate = inngest.createFunction(
                     },
                 ]);
                 return {
-                    evaluation,
+                    ...evaluation,
                     jobId: job.id,
-                    userId: candidate,
+                    candidateId: candidate.id,
                 };
             })
         );
@@ -144,11 +144,7 @@ export const evaluateCandidate = inngest.createFunction(
                 async (evaluation) =>
                     await db
                         .insert(applicationsTable)
-                        .values({
-                            ...evaluation.evaluation,
-                            jobId: evaluation.jobId,
-                            userId: evaluation.userId.id,
-                        })
+                        .values(evaluation)
                         .returning()
             )
         );
