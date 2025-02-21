@@ -168,7 +168,7 @@ export const evaluateCandidate = inngest.createFunction(
                     continue;
                 }
                 await slack.chat.postMessage({
-                    channel: "C08E9RZARB5",
+                    channel: env.SLACK_CHANNEL_ID,
                     text: "New Candidate Evaluation",
                     blocks: [
                         {
@@ -257,7 +257,7 @@ export const sendSlackMessage = inngest.createFunction(
         const slack = new WebClient(env.SLACK_BOT_TOKEN);
 
         const result = await slack.chat.postMessage({
-            channel: "C08E9RZARB5",
+            channel: env.SLACK_CHANNEL_ID,
             blocks: [
                 {
                     type: "section",

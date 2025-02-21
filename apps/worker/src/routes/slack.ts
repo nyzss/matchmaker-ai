@@ -39,7 +39,7 @@ const route = slack
 
         if (!applications || applications.length === 0) {
             await slack.chat.postMessage({
-                channel: "C08E9RZARB5",
+                channel: env(c).SLACK_CHANNEL_ID,
                 text: `Application '${applicationId}' was cancelled due to no feedback within the 2 minutes window.`,
             });
 
@@ -47,7 +47,7 @@ const route = slack
         }
 
         await slack.chat.postMessage({
-            channel: "C08E9RZARB5",
+            channel: env(c).SLACK_CHANNEL_ID,
             text: `Application '${applicationId}' was approved with the following feedback: "${feedback}"`,
         });
 

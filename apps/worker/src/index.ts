@@ -16,6 +16,7 @@ export interface HonoType extends Env {
         BETTER_AUTH_URL: string;
         OPENAI_API_KEY: string;
         SLACK_BOT_TOKEN: string;
+        SLACK_CHANNEL_ID: string;
     };
     Variables: {
         user: ReturnType<typeof createAuth>["$Infer"]["Session"]["user"] | null;

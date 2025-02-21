@@ -12,6 +12,7 @@
         "db:check": "turbo run db:check",
         "db:seed": "turbo run db:seed",
         "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+        "inngest": "pnpm dlx inngest-cli@latest dev -u http://localhost:8787/api/inngest",
         "check-types": "turbo run check-types"
     },
     "devDependencies": {
