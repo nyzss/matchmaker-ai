@@ -89,9 +89,18 @@ export const createCandidate = inngest.createFunction(
         );
         const db = createDb({ DATABASE_URL: env.DATABASE_URL });
 
-        const createdCandidate = await llm.invoke(
-            "Create a candidate profile for a customer support role at Doctolib"
-        );
+        const createdCandidate = await llm.invoke([
+            {
+                role: "system",
+                content: `Your task is to generate a random candidate profile for a job posting.
+                    Be creative and generate a profile that is not too generic.
+                    `,
+            },
+            {
+                role: "user",
+                content: `Generate a random candidate profile for a job posting`,
+            },
+        ]);
 
         const candidate = await db
             .insert(candidatesTable)
@@ -109,7 +118,7 @@ export const createCandidate = inngest.createFunction(
             },
         });
 
-        return { message: "Candidate created", candidate };
+        return { message: "Candidate created" };
     }
 );
 export const evaluateCandidate = inngest.createFunction(
@@ -135,11 +144,13 @@ export const evaluateCandidate = inngest.createFunction(
                 const evaluation = await llm.invoke([
                     {
                         role: "system",
-                        content: `You are a recruiter evaluating a candidate for the following job: ${job}`,
+                        content: `You are a recruiter evaluating a candidate for the following job: ${JSON.stringify(
+                            job
+                        )}`,
                     },
                     {
                         role: "user",
-                        content: `Candidate: ${candidate}`,
+                        content: `Candidate: ${JSON.stringify(candidate)}`,
                     },
                 ]);
                 return {
@@ -232,12 +243,12 @@ export const checkApplications = inngest.createFunction(
                 )
             );
 
-        applications.forEach(async (application) => {
+        for (const application of applications) {
             await db
                 .update(applicationsTable)
                 .set({ status: "canceled" })
                 .where(eq(applicationsTable.id, application.id));
-        });
+        }
 
         return { message: "Applications checked", applications };
     }
