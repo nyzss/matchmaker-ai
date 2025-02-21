@@ -81,6 +81,7 @@ const router = app
     .route("/applications", applications)
     .route("/jobs", jobs)
     .route("/slack", slack);
-export default app;
+
+export default router;
 
 export type AppType = typeof router;

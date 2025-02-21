@@ -1,5 +1,6 @@
 import { EventSchemas, Inngest, InngestMiddleware } from "inngest";
 import { HonoType } from "..";
+import { Context } from "hono";
 
 import { z } from "zod";
 import { createLLM } from "./llm";
@@ -20,7 +21,7 @@ type evaluateCandidate = {
 type Events = {
     "pipeline/evaluate-candidate": evaluateCandidate;
     "pipeline/create-candidate": {
-        data: {};
+        data: object;
     };
     "pipeline/send-slack-message": {
         data: {
@@ -36,9 +37,13 @@ const bindings = new InngestMiddleware({
             onFunctionRun({ reqArgs }) {
                 return {
                     transformInput() {
-                        const envArgs: any = reqArgs.filter(
-                            (arg: any) => arg.env
-                        );
+                        console.log(reqArgs);
+                        const args = reqArgs as Array<Context>;
+
+                        const envArgs = args.filter((arg: Context) => arg.env);
+                        if (!envArgs || !envArgs[0]) {
+                            throw new Error("No environment variables found");
+                        }
                         const env = envArgs[0].env as HonoType["Bindings"];
                         return {
                             ctx: {
@@ -74,7 +79,7 @@ export const createCandidate = inngest.createFunction(
     { id: "create-candidate" },
     // { event: "pipeline/create-candidate" },
     { cron: "*/5 * * * *" },
-    async ({ event, step, env }) => {
+    async ({ env }) => {
         const llm = createLLM(env.OPENAI_API_KEY).withStructuredOutput(
             candidateSchema,
             {
@@ -110,7 +115,7 @@ export const createCandidate = inngest.createFunction(
 export const evaluateCandidate = inngest.createFunction(
     { id: "evaluate-candidate" },
     { event: "pipeline/evaluate-candidate" },
-    async ({ event, step, env }) => {
+    async ({ event, env }) => {
         const db = createDb({ DATABASE_URL: env.DATABASE_URL });
 
         const jobs = await db.select().from(jobTable);
@@ -211,7 +216,7 @@ export const evaluateCandidate = inngest.createFunction(
 export const checkApplications = inngest.createFunction(
     { id: "check-applications" },
     { cron: "* * * * *" },
-    async ({ event, step, env }) => {
+    async ({ env }) => {
         const db = createDb({ DATABASE_URL: env.DATABASE_URL });
 
         const applications = await db
@@ -241,7 +246,7 @@ export const checkApplications = inngest.createFunction(
 export const sendSlackMessage = inngest.createFunction(
     { id: "send-slack-message" },
     { event: "pipeline/send-slack-message" },
-    async ({ event, step, env }) => {
+    async ({ event, env }) => {
         const message = event.data.message;
 
         console.log(env.SLACK_BOT_TOKEN);

@@ -5,7 +5,8 @@
     },
     "scripts": {
         "dev": "wrangler dev",
-        "deploy": "wrangler deploy --minify"
+        "deploy": "wrangler deploy --minify",
+        "lint": "eslint ."
     },
     "dependencies": {
         "@hono/zod-validator": "^0.4.3",
@@ -21,7 +22,11 @@
     },
     "devDependencies": {
         "@cloudflare/workers-types": "^4.20250109.0",
+        "@eslint/js": "^9.20.0",
         "@repo/typescript-config": "workspace:*",
+        "eslint": "^9.20.0",
+        "typescript": "^5.7.3",
+        "typescript-eslint": "^8.24.0",
         "wrangler": "^3.101.0"
     }
 }
